@@ -10,24 +10,25 @@ class TweetService {
         const content = data.content;
         // finding hashtags from the content tags is an array of strings
         let tags = content.match(/#\w+/g)
-                          .map((tag)=>tag.substring(1))
-                          .map((tag)=>tag.toLowerCase());
+                          .map((tag)=>tag.substring(1).toLowerCase());
         // creating a new tweet
-        const tweet = await this.tweetRepository.create(content);
+        const tweet = await this.tweetRepository.create(data);
         // finding already present tags
         let alreadyPresentTags = await this.hashtagRepository.findByName(tags);
         // filtering out the new tags getting only the tags instead of the whole object
-        let alreadyPresentTagsTitle = alreadyPresentTags.map((tag)=>tag.title);
+        let alreadyPresentTagsTitle = alreadyPresentTags.map(tag=>tag.title);
         // filtering the tags that are not already present
-        let newTags = tags.filter((tag)=>!alreadyPresentTagsTitle.includes(tag));
+        let newTags = tags.filter(tag=>!alreadyPresentTagsTitle.includes(tag));
         // adding the title and tweet id to the new tags
         // as expected by our model
-        newTags = newTags.map((tag)=>{return {title:tag, tweet:tweet._id}});
+        newTags = newTags.map(tag=>{
+            return {title:tag, tweets:[tweet.id]}
+        });
         // bulk creating the new tags newatgs is an array of objects [{ttile:tag,tweet:tweet._id}]
         await this.hashtagRepository.bulkCreate(newTags);
         // adding the tweet id to the already present tags
         alreadyPresentTags.forEach((tag)=>{
-            tag.tweet.push(tweet._id);
+            tag.tweets.push(tweet.id);
             tag.save();
         });
         return tweet;
