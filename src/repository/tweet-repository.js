@@ -1,5 +1,5 @@
 const Tweet = require('../models/tweet.js');
-
+const mongoose = require('mongoose');
 class TweetRepository{
     async create(data){
         try {
@@ -53,7 +53,7 @@ class TweetRepository{
         } catch (error) {
             console.log(error);
         }
-    }
+    } 
 }
 
 module.exports = TweetRepository;
