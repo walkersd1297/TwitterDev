@@ -14,12 +14,12 @@ const setupServer = ()=>{
     app.listen(3000,async ()=>{
         console.log('Server is running on port 3000');
         connectDB();
-        const userRepo = new UserRepository();
-        const tweetRepo = new TweetRepository();
-        const tweets = await tweetRepo.getAll(0,10);
-        const users = await userRepo.getAll()
-        const likeService = new LikeService();
-        likeService.toggleLike(tweets[0]._id,'Tweet',users[0]._id);
+        // const userRepo = new UserRepository();
+        // const tweetRepo = new TweetRepository();
+        // const tweets = await tweetRepo.getAll(0,10);
+        // const users = await userRepo.getAll()
+        // const likeService = new LikeService();
+        // likeService.toggleLike(tweets[0]._id,'Tweet',users[0]._id);
     });
 }
 
