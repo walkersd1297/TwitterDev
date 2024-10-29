@@ -1,9 +1,10 @@
-const {LikeRepository,TweetRepository} = require('../repository/index.js');
+const {LikeRepository,TweetRepository,CommentRepository} = require('../repository/index.js');
 
 class LikeService{
     constructor(){
         this.likeRepository = new LikeRepository();
         this.tweetRepository = new TweetRepository();
+        this.commentRepository = new CommentRepository();
     }
 
     async toggleLike(docID,docType,userId){  // api/v1/likes/toggle?id=docID&docType=Tweet
@@ -12,6 +13,7 @@ class LikeService{
 
         }else if(docType==='Comment'){
             // TODO
+            var likeable = await this.commentRepository.find(docID);
         } else{
             throw new Error('Invalid docType');
         }

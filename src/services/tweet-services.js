@@ -33,6 +33,17 @@ class TweetService {
         });
         return tweet;
     }
+
+    async getTweetsWithComments(tweetId){
+        try {
+            const tweet = await this.tweetRepository.getWithComments(tweetId);
+            return tweet;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
+
 
 module.exports = TweetService;
