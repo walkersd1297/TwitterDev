@@ -10,4 +10,5 @@ router.get('/tweets/:id',tweetController.get);
 router.post('/likes/toggle',likeController.toggleLike);
 router.post('/comments',commentController.createComment);
 router.post('/signup',userController.signup);
+router.post('/login',userController.login);
 module.exports = router;
