@@ -3,7 +3,7 @@ const commentService = new CommentService();
 
 const createComment = async(req,res)=>{
     try {
-        const response = await commentService.create(req.query.docID,req.query.docType,req.body.userID,req.body.content);
+        const response = await commentService.create(req.query.docID,req.query.docType,req.user.id,req.body.content);
         res.status(200).json({
             data:response,
             message:'Comment created',

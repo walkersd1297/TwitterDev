@@ -6,7 +6,7 @@ const authenticate = (req, res, next) => {
             next(err);
         }
         if(!user){
-            res.status(401).json({message: 'Unauthorized'});
+            res.status(401).json({message: 'Unauthorized access'});
         }
         req.user = user;
         next();
