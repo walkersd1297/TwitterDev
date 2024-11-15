@@ -66,4 +66,86 @@ describe('User get by email',()=>{
             expect(err.message).toBe('Something went wrong');
         });
     });
-})
+});
+
+describe('User signin',()=>{
+    test('User signin successfully',async ()=>{
+        const data = {
+            email:'a@b.com',
+            password:'123456'
+        };
+        const mockUser = {
+            email:'a@b.com',
+            password:'hashedPassword',
+            comparePassword:jest.fn().mockReturnValue(true),
+            genJWT:jest.fn().mockReturnValue('mockToken')
+        };
+        console.log(mockUser);
+        jest.spyOn(UserService.prototype,'getUserByEmail').mockResolvedValue(mockUser);
+        // act
+        const userService = new UserService();
+        const token = await userService.signin(data);
+        // assert
+        expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(data.email);
+        expect(mockUser.comparePassword).toHaveBeenCalledWith(data.password);
+        expect(mockUser.genJWT).toHaveBeenCalled();
+        expect(token).toBe('mockToken');
+    });
+    test('User email not found',async ()=>{
+        const data = {
+            email:'notexist@b.com',
+            password:'12132'
+        };
+        jest.spyOn(UserService.prototype,'getUserByEmail').mockResolvedValue(null);
+        // act
+        const userService = new UserService();
+        await expect(userService.signin(data)).rejects.toEqual({
+            message:'User not found'
+        });
+        // assert one more
+        expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(data.email);
+    });
+    test('User password not matched',async()=>{
+        const data = {
+            email:'a@b.com',
+            password:'12345'
+        };
+        const mockUser = {
+            email:'a@b.com',
+            password:'hashedPassword',
+            comparePassword:jest.fn().mockReturnValue(false),
+            genJWT:jest.fn()
+        };
+        jest.spyOn(UserService.prototype,'getUserByEmail').mockResolvedValue(mockUser);
+        // act
+        const userService = new UserService();
+        await expect(userService.signin(data)).rejects.toEqual({
+            message : 'Invalid password'
+        });
+        // assert
+        expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(data.email);
+        expect(mockUser.comparePassword).toHaveBeenCalled();
+        expect(mockUser.genJWT).not.toHaveBeenCalled();
+    });
+    test('something went wrong',async()=>{
+        const data = {
+            email : 'a@b.com',
+            password:'123456'
+        };
+        const mockUser = {
+            email : 'a@b.com',
+            password:'hashedPassword',
+            comparePassword:jest.fn().mockReturnValue(true),
+            genJwt:jest.fn().mockResolvedValue('mockToken')
+        };
+        jest.spyOn(UserService.prototype,'getUserByEmail').mockImplementation(()=>{
+            throw new Error ('Something went wrong');
+        });
+        // act and assert
+        const userService = new UserService();
+        const user = await userService.signin(data).catch((err)=>{
+            expect(err).toBeInstanceOf(Error);
+            expect(err.message).toBe('Something went wrong');
+        });
+    });
+});
