@@ -34,4 +34,36 @@ describe('user signup',()=>{
             expect(err.message).toBe('Something went wrong');
         }); 
     });
+});
+
+describe('User get by email',()=>{
+    test('get user by email id',async ()=>{
+        // prepare
+        const data = {
+            email:'a@b.com',
+            password:'12345'
+        };
+        (UserRepository.prototype.findBy).mockReturnValue({...data});
+        // act
+        const userService = new UserService();
+        const user = await userService.getUserByEmail('a@b.com');
+        // assert
+        expect(user.email).toBe('a@b.com');
+    });
+    test('can not acces the user by its email',async ()=>{
+        // prepare
+        const data = {
+            email:'a@b.com',
+            password:'12345'
+        };
+        (UserRepository.prototype.findBy).mockReturnValue(()=>{
+            throw new Error ('Something went wrong');
+        });
+        // act
+        const userService = new UserService();
+        const user = await userService.getUserByEmail('a@b.com').catch((err)=>{
+            expect(err).toBeInstanceOf(Error);
+            expect(err.message).toBe('Something went wrong');
+        });
+    });
 })
